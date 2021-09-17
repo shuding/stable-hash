@@ -13,9 +13,9 @@ yarn add stable-hash
 ```
 
 ```js
-import stableHash from 'stable-hash'
+import hash from 'stable-hash'
 
-stableHash(anyJavaScriptValueHere) // returns a string
+hash(anyJavaScriptValueHere) // returns a string
 ```
 
 ## Examples
@@ -23,28 +23,28 @@ stableHash(anyJavaScriptValueHere) // returns a string
 ### Primitive Value
 
 ```js
-stableHash(1)
-stableHash('foo')
-stableHash(true)
-stableHash(undefined)
-stableHash(null)
-stableHash(NaN)
+hash(1)
+hash('foo')
+hash(true)
+hash(undefined)
+hash(null)
+hash(NaN)
 ```
 
 BigInt:
 
 ```js
-stableHash(1) === stableHash(1n)
-stableHash(1) !== stableHash(2n)
+hash(1) === hash(1n)
+hash(1) !== hash(2n)
 ```
 
 Symbol:
 
 ```js
-stableHash(Symbol.for('foo')) === stableHash(Symbol.for('foo'))
-stableHash(Symbol.for('foo')) === stableHash(Symbol('foo'))
-stableHash(Symbol('foo')) === stableHash(Symbol('foo'))
-stableHash(Symbol('foo')) !== stableHash(Symbol('bar'))
+hash(Symbol.for('foo')) === hash(Symbol.for('foo'))
+hash(Symbol.for('foo')) === hash(Symbol('foo'))
+hash(Symbol('foo')) === hash(Symbol('foo'))
+hash(Symbol('foo')) !== hash(Symbol('bar'))
 ```
 
 _Since Symbols cannot be serialized, stable-hash simply uses its description as the hash._
@@ -52,21 +52,21 @@ _Since Symbols cannot be serialized, stable-hash simply uses its description as 
 ### Regex
 
 ```js
-stableHash(/foo/) === stableHash(/foo/)
-stableHash(/foo/) !== stableHash(/bar/)
+hash(/foo/) === hash(/foo/)
+hash(/foo/) !== hash(/bar/)
 ```
 
 ### Date
 
 ```js
-stableHash(new Date(1)) === stableHash(new Date(1))
+hash(new Date(1)) === hash(new Date(1))
 ```
 
 ### Array
 
 ```js
-stableHash([1, '2', [new Date(3)]]) === stableHash([1, '2', [new Date(3)]])
-stableHash([1, 2]) !== stableHash([2, 1])
+hash([1, '2', [new Date(3)]]) === hash([1, '2', [new Date(3)]])
+hash([1, 2]) !== hash([2, 1])
 ```
 
 Circular:
@@ -74,20 +74,20 @@ Circular:
 ```js
 const foo = []
 foo.push(foo)
-stableHash(foo) === stableHash(foo)
+hash(foo) === hash(foo)
 ```
 
 ### Object
 
 ```js
-stableHash({ foo: 'bar' }) === stableHash({ foo: 'bar' })
-stableHash({ foo: { bar: 1 } }) === stableHash({ foo: { bar: 1 } })
+hash({ foo: 'bar' }) === hash({ foo: 'bar' })
+hash({ foo: { bar: 1 } }) === hash({ foo: { bar: 1 } })
 ```
 
 Stable:
 
 ```js
-stableHash({ a: 1, b: 2, c: 3 }) === stableHash({ c: 3, b: 2, a: 1 })
+hash({ a: 1, b: 2, c: 3 }) === hash({ c: 3, b: 2, a: 1 })
 ```
 
 Circular:
@@ -95,7 +95,7 @@ Circular:
 ```js
 const foo = {}
 foo.foo = foo
-stableHash(foo) === stableHash(foo)
+hash(foo) === hash(foo)
 ```
 
 ### Function, Class, Set, Map, Buffer...
@@ -104,20 +104,20 @@ stableHash(foo) === stableHash(foo)
 
 ```js
 const foo = () => {}
-stableHash(foo) === stableHash(foo)
-stableHash(foo) !== stableHash(() => {})
+hash(foo) === hash(foo)
+hash(foo) !== hash(() => {})
 ```
 
 ```js
 class Foo {}
-stableHash(Foo) === stableHash(Foo)
-stableHash(Foo) !== stableHash(class {})
+hash(Foo) === hash(Foo)
+hash(Foo) !== hash(class {})
 ```
 
 ```js
 const foo = new Set([1])
-stableHash(foo) === stableHash(foo)
-stableHash(foo) !== stableHash(new Set([1]))
+hash(foo) === hash(foo)
+hash(foo) !== hash(new Set([1]))
 ```
 
 ## Notice
@@ -129,11 +129,11 @@ This function does something similar to serialization. It doesn't generate a sec
 
 ```js
 import crypto from 'crypto'
-import stableHash from 'stable-hash'
+import hash from 'stable-hash'
 
-const hash = stableHash(anyJavaScriptValueHere)
-const encodedHash = Buffer.from(hash).toString('base64')
-const safeHash = crypto.createHash('MD5').update(hash).digest('hex')
+const weakHash = hash(anyJavaScriptValueHere)
+const encodedHash = Buffer.from(weakHash).toString('base64')
+const safeHash = crypto.createHash('MD5').update(weakHash).digest('hex')
 ```
 
 ## License
