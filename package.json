@@ -1,11 +1,15 @@
 {
   "name": "stable-hash",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Stable JS value hash.",
-  "main": "index.js",
   "repository": "https://github.com/shuding/stable-hash",
   "author": "Shu Ding",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
     "build:mjs": "esbuild src/index.ts --minify --target=es6 --outdir=dist --out-extension:.js=.mjs",
     "build:cjs": "esbuild src/index.ts --minify --target=es6 --outdir=dist --format=cjs",
