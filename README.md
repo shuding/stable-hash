@@ -1,6 +1,6 @@
 # stable-hash
 
-A small (496b) lib for stable hashing a JavaScript value. Originally created for [SWR](https://github.com/vercel/swr).
+A tiny and fast (496b <sup>[unpkg](https://unpkg.com/stable-hash@0.0.2/dist/index.mjs)</sup>) lib for stable hashing a JavaScript value. Originally created for [SWR](https://github.com/vercel/swr).
 
 It's similar to `JSON.stringify(value)`, but:
 1. Supports any JavaScript value (BigInt, NaN, Symbol, function, class, ...)
@@ -121,9 +121,9 @@ hash(foo) === hash(foo)
 hash(foo) !== hash(new Set([1]))
 ```
 
-## Notice
+## Notes
 
-This function does something similar to serialization. It doesn't generate a secure checksum or digest, which usually has a fixed length and is hard to be reversed. With `stable-hash` it's likely possible to get the original data. Also, the output might include any charaters, not just alphabets and numbers like other hash algorithm. So:
+This function does something similar to serialization. It doesn't generate a secure checksum or digest, which usually has a fixed length and is hard to be reversed. With `stable-hash` it's still possible to get the original data. Also, the output might include any charaters, not just alphabets and numbers like other hash algorithms. So:
 
 - Use another encoding layer on top of it if you want to display the output. 
 - Use another crypto layer on top of it if you want to have a secure and fixed length hash.
@@ -136,6 +136,8 @@ const weakHash = hash(anyJavaScriptValueHere)
 const encodedHash = Buffer.from(weakHash).toString('base64')
 const safeHash = crypto.createHash('MD5').update(weakHash).digest('hex')
 ```
+
+Also, the consistency of this lib is sometimes guaranteed by the singularity of the WeakMap instance. So it might not generate the consistent results when running in different runtimes, e.g. server/client or parent/worker scenarios.
 
 ## License
 
