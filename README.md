@@ -3,8 +3,9 @@
 A small (496b) lib for stable hashing a JavaScript value. Originally created for [SWR](https://github.com/vercel/swr).
 
 It's similar to `JSON.stringify(value)`, but:
-1. `value` can be any JavaScript value
-2. It sorts object keys
+1. Supports any JavaScript value (BigInt, NaN, Symbol, function, class, ...)
+2. Sorts object keys (stable)
+3. Supports circular objects
 
 ## Use
 
