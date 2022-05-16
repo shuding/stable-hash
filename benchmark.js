@@ -1,5 +1,6 @@
 'use strict'
 
+const stringify = require('json-stringify-deterministic')
 const { default: hash } = require('stable-hash')
 const { escape } = require('base64-url')
 const hashObject = require('hash-obj')
@@ -64,6 +65,15 @@ const getHashTwo = obj => {
   )
 }
 
+const getHashThree = obj => {
+  return escape(
+    crypto
+      .createHash('sha512')
+      .update(stringify(flattie(obj)))
+      .digest('base64')
+  )
+}
+
 bench('`hash-obj` 200.000 times', function (b) {
   b.start()
 
@@ -79,6 +89,16 @@ bench('`stable-hash` 200.000 times', function (b) {
 
   for (let i = 0; i < 200000; i++) {
     getHashTwo(payload)
+  }
+
+  b.end()
+})
+
+bench('`json-stringify-deterministic` 200.000 times', function (b) {
+  b.start()
+
+  for (let i = 0; i < 200000; i++) {
+    getHashThree(payload)
   }
 
   b.end()
