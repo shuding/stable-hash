@@ -227,7 +227,7 @@ describe(`The Func-y Bunch featuring The Referential Squad`, () => {
 
     test(`Regex`, () => {
         expect(hash(/hello/)).toEqual(hash(/hello/));
-        expect(hash(/hello/)).not.toEqual("hello");
+        expect(hash(/hello/)).not.toEqual(hash("hello"));
         expect(hash(/hello/i)).not.toEqual(hash(/HELLO/i))
     });
 
