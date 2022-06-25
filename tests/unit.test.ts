@@ -154,7 +154,7 @@ describe(`POJOs`, () => {
         }))
     });
     test(`Stringified json not equal to itself in parsed form`, () => {
-        expect(hash({ use: "SWR" })).not.toEqual(JSON.stringify({ use: "SWR" }))
+        expect(hash({ use: "SWR" })).not.toEqual(hash(JSON.stringify({ use: "SWR" })))
     });
     test(`Order doesn't matter in non-array object`, () => {
         expect(hash({ first: "1", second: "2", third: "3" })).toEqual(hash({ second: "2", third: "3", first: "1" }))
