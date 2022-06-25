@@ -49,10 +49,10 @@ describe(`Strings`, () => {
 
 describe(`Numbers including BigInt`, () => {
     test(`SheNaNigans`, () => {
-        expect(NaN).toEqual(NaN);
-        expect(NaN).not.toEqual(NaN.toString());
-        expect(1 + NaN).toEqual(NaN + 1);
-        expect("1" + NaN).not.toEqual(NaN + "1");
+        expect(hash(NaN)).toEqual(hash(NaN));
+        expect(hash(NaN)).not.toEqual(hash(NaN.toString()));
+        expect(hash(1 + NaN)).toEqual(hash(NaN + 1));
+        expect(hash("1" + NaN)).not.toEqual(hash(NaN + "1"));
     });
     test(`Integers`, () => {
         expect(hash(2 + 1)).toEqual(hash(2 + 1));
