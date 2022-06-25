@@ -12,7 +12,7 @@ describe(`Strings`, () => {
     test(`Empty strings are equal`, () => {
         expect(hash("")).toEqual(hash(""))
     });
-    test(`Empty string is not equal other falsy values`, () => {
+    test(`Empty string is not equal to other falsy values`, () => {
         const emptyString = hash("")
         expect(emptyString).not.toEqual(hash(undefined))
         expect(emptyString).not.toEqual(hash(0))
@@ -60,13 +60,13 @@ describe(`Numbers including BigInt`, () => {
         expect(hash(123)).not.toEqual(hash(1123));
         expect(hash(400_000)).toEqual(hash(400000));
     });
-    test(`Float`, () => {
+    test(`Floats`, () => {
         expect(hash(0.000001)).toEqual(hash(0.000001))
         expect(hash(-0.000001)).not.toEqual(hash(0.000001))
         expect(hash(9999999.9999999)).not.toEqual(hash(10000000.0))
     });
 
-    test(`BigInt`, () => {
+    test(`BigInts`, () => {
         expect(hash(BigInt(8))).toEqual(hash(BigInt(8)));
         //expect(hash( BigInt(8) )).not.toEqual(hash(8)); This fails but that may be intentional;
         expect(hash(BigInt(99999999999999999999999999999999999999999999999999999999999999999999999999)))
@@ -210,7 +210,8 @@ describe(`The Func-y Bunch featuring The Referential Squad`, () => {
         expect(hash(sum)).not.toEqual(hash(alsoSum));
 
         const functionHolder = { sum }
-        expect(hash(functionHolder.sum)).toEqual(hash(functionHolder.sum))
+        expect(hash(functionHolder.sum)).toEqual(hash(functionHolder.sum));
+        expect(hash(functionHolder.sum)).toEqual(hash(sum));
         expect(hash(functionHolder)).toEqual(hash(functionHolder))
     });
 
@@ -282,8 +283,8 @@ describe(`The Func-y Bunch featuring The Referential Squad`, () => {
         expect(hash(emptyBuffer)).toEqual(hash(emptyBuffer));
         expect(hash(emptyBuffer)).not.toEqual(hash(anotherEmptyBuffer));
 
-        const stringBuffer = Buffer.from("Host with Vercel to deploy the future of the modern, performant web apps that scale with ease.", "utf8");
-        const copy = Buffer.from("Host with Vercel to deploy the future of the modern, performant web apps that scale with ease.", "utf8");
+        const stringBuffer = Buffer.from("Host with Vercel to deploy the future of modern, performant web apps that scale with ease.", "utf8");
+        const copy = Buffer.from("Host with Vercel to deploy the future of modern, performant web apps that scale with ease.", "utf8");
         expect(hash(stringBuffer)).toEqual(hash(stringBuffer));
         expect(hash(stringBuffer)).not.toEqual(hash(copy))
     });
