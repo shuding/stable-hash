@@ -9,7 +9,7 @@
   "module": "./dist/index.mjs",
   "exports": {
     "require": "./dist/index.js",
-    "import": "./dist/index.mjs",
+    "import": "./dist/index.mjs"
   },
   "files": [
     "dist/**"
