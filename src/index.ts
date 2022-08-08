@@ -24,6 +24,11 @@ export default function stableHash(arg: any): string {
     // If it's already hashed, directly return the result.
     let result = table.get(arg)
     if (result) return result
+    // Store the hash first for circular reference detection before entering the
+    // recursive `stableHash` calls.
+    // For other objects like set and map, we use this id directly as the hash.
+    result = ++counter + "~"
+    table.set(arg, result)
     let index: any
 
     if (constructor == Array) {
@@ -32,6 +37,7 @@ export default function stableHash(arg: any): string {
       for (index = 0; index < arg.length; index++) {
         result += stableHash(arg[index]) + ","
       }
+      table.set(arg, result)
     } else if (constructor == Object) {
       // Object, sort keys.
       result = "#"
@@ -41,13 +47,8 @@ export default function stableHash(arg: any): string {
           result += index + ":" + stableHash(arg[index]) + ","
         }
       }
-    } else {
-      // Store the hash first for circular reference detection before entering the
-      // recursive `stableHash` calls.
-      // For other objects like set and map, we use this id directly as the hash.
-      result = ++counter + "~"
+      table.set(arg, result)
     }
-    table.set(arg, result)
     return result
   }
   if (isDate) return arg.toJSON()
