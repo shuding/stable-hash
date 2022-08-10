@@ -1,6 +1,6 @@
 # stable-hash
 
-A tiny and fast (496b <sup>[unpkg](https://unpkg.com/stable-hash@0.0.2/dist/index.mjs)</sup>) lib for "stably hashing" a JavaScript value. Originally created for [SWR](https://github.com/vercel/swr).
+A tiny and fast (481b <sup>[unpkg](https://unpkg.com/stable-hash@0.0.3/dist/index.mjs)</sup>) lib for "stably hashing" a JavaScript value. Originally created for [SWR](https://github.com/vercel/swr).
 
 It's similar to `JSON.stringify(value)`, but:
 1. Supports any JavaScript value (BigInt, NaN, Symbol, function, class, ...)

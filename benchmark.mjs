@@ -1,14 +1,12 @@
-'use strict'
+import stringify from 'json-stringify-deterministic'
+import hash from 'stable-hash'
+import { escape } from 'base64-url'
+import hashObject from 'hash-obj'
+import { flattie } from 'flattie'
+import bench from 'nanobench'
+import crypto from 'node:crypto'
 
-const stringify = require('json-stringify-deterministic')
-const { default: hash } = require('stable-hash')
-const { escape } = require('base64-url')
-const hashObject = require('hash-obj')
-const { flattie } = require('flattie')
-const bench = require('nanobench')
-const crypto = require('crypto')
-
-// this is an exmaple of payload
+// this is an example of payload
 const payload = {
   url: 'https://example.com/',
   query: {
@@ -39,7 +37,7 @@ const payload = {
 }
 
 /***
- * benchamarking `hash-obj` vs. `stable-hash`
+ * benchmarking `hash-obj` vs. `stable-hash`
  *
  * The goal is to represent a real use-case. Because that:
  *
