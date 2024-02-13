@@ -1,6 +1,6 @@
 {
   "name": "stable-hash",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Stable JS value hash.",
   "repository": "https://github.com/shuding/stable-hash",
   "author": "Shu Ding",
