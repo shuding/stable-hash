@@ -14,7 +14,7 @@ let counter = 0
 //
 // This is not a serialization function, and the result is not guaranteed to be
 // parsable.
-export default function stableHash(arg: any): string {
+export function stableHash(arg: any): string {
   const type = typeof arg
   const constructor = arg && arg.constructor
   const isDate = constructor == Date
@@ -55,3 +55,5 @@ export default function stableHash(arg: any): string {
   if (type == "symbol") return arg.toString()
   return type == "string" ? JSON.stringify(arg) : "" + arg
 }
+
+export default stableHash

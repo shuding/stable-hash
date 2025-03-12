@@ -20,7 +20,7 @@
     "build:mjs": "esbuild src/index.ts --minify --target=es6 --outdir=dist --out-extension:.js=.mjs",
     "build:cjs": "esbuild src/index.ts --minify --target=es6 --outdir=dist --format=cjs",
     "build:types": "tsc --emitDeclarationOnly --declaration -p tsconfig.build.json",
-    "build": "yarn build:mjs && yarn build:cjs && yarn build:types",
+    "build": "pnpm build:mjs && pnpm build:cjs && pnpm build:types",
     "test": "jest"
   },
   "devDependencies": {
