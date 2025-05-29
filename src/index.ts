@@ -17,7 +17,7 @@ let counter = 0
 export function stableHash(arg: any): string {
   const type = typeof arg
   const constructor = arg && arg.constructor
-  const isDate = constructor == Date
+  const isDate = constructor === Date
 
   if (Object(arg) === arg && !isDate && constructor != RegExp) {
     // Object/function, not null/date/regexp. Use WeakMap to store the id first.
@@ -31,14 +31,14 @@ export function stableHash(arg: any): string {
     table.set(arg, result)
     let index: any
 
-    if (constructor == Array) {
+    if (constructor === Array) {
       // Array.
       result = "@"
       for (index = 0; index < arg.length; index++) {
         result += stableHash(arg[index]) + ","
       }
       table.set(arg, result)
-    } else if (constructor == Object) {
+    } else if (constructor === Object) {
       // Object, sort keys.
       result = "#"
       const keys = Object.keys(arg).sort()
@@ -52,8 +52,8 @@ export function stableHash(arg: any): string {
     return result
   }
   if (isDate) return arg.toJSON()
-  if (type == "symbol") return arg.toString()
-  return type == "string" ? JSON.stringify(arg) : "" + arg
+  if (type === "symbol") return arg.toString()
+  return type === "string" ? JSON.stringify(arg) : "" + arg
 }
 
 export default stableHash
