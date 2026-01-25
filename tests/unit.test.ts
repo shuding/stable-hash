@@ -109,6 +109,25 @@ describe(`Arrays`, () => {
         arrayWithEmptyIndices[100] = 3;
         expect(arrayWithEmptyIndices).not.toEqual([1, 2, 3]);
     });
+    test(`Mutated arrays should have different hashes`, () => {
+        // Test case from issue: arrays of similar objects but different lengths
+        const arr1 = [{ b: 0 }];
+        const arr2 = [{ b: 0 }];
+        
+        // First, they should be equal
+        expect(hash(arr1)).toEqual(hash(arr2));
+        
+        // After mutating arr2, they should NOT be equal
+        arr2.push({ b: 1 });
+        expect(hash(arr1)).not.toEqual(hash(arr2));
+        
+        // Continue mutating and testing
+        arr1.push({ b: 1 });
+        expect(hash(arr1)).toEqual(hash(arr2));
+        
+        arr2.push({ b: 2 });
+        expect(hash(arr1)).not.toEqual(hash(arr2));
+    });
 })
 
 
@@ -158,6 +177,24 @@ describe(`POJOs`, () => {
     });
     test(`Order doesn't matter in non-array object`, () => {
         expect(hash({ first: "1", second: "2", third: "3" })).toEqual(hash({ second: "2", third: "3", first: "1" }))
+    })
+    test(`Mutated objects should have different hashes`, () => {
+        const obj1: any = { a: 1 };
+        const obj2: any = { a: 1 };
+        
+        // First, they should be equal
+        expect(hash(obj1)).toEqual(hash(obj2));
+        
+        // After mutating obj2, they should NOT be equal
+        obj2.b = 2;
+        expect(hash(obj1)).not.toEqual(hash(obj2));
+        
+        // Continue mutating and testing
+        obj1.b = 2;
+        expect(hash(obj1)).toEqual(hash(obj2));
+        
+        obj2.c = 3;
+        expect(hash(obj1)).not.toEqual(hash(obj2));
     })
     test(`Objects with nested data structures`, () => {
         expect(hash({ a: { b: { c: {} } } })).toEqual(hash({ a: { b: { c: {} } } }));

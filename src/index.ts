@@ -6,6 +6,9 @@ const table = new WeakMap<object, string>()
 // A counter of the key.
 let counter = 0
 
+// Track arrays and plain objects hashed in the current operation to clean up after
+let currentHashObjects: object[] | null = null
+
 // A stable hash implementation that supports:
 //  - Fast and ensures unique hash properties
 //  - Handles unserializable values
@@ -18,6 +21,12 @@ export function stableHash(arg: any): string {
   const type = typeof arg
   const constructor = arg && arg.constructor
   const isDate = constructor === Date
+
+  // Track if this is a top-level call
+  const isTopLevel = currentHashObjects === null
+  if (isTopLevel) {
+    currentHashObjects = []
+  }
 
   if (Object(arg) === arg && !isDate && constructor != RegExp) {
     // Object/function, not null/date/regexp. Use WeakMap to store the id first.
@@ -38,6 +47,10 @@ export function stableHash(arg: any): string {
         result += stableHash(arg[index]) + ","
       }
       table.set(arg, result)
+      // Track this array for cleanup after the top-level hash completes
+      if (currentHashObjects) {
+        currentHashObjects.push(arg)
+      }
     } else if (constructor === Object) {
       // Object, sort keys.
       result = "#"
@@ -48,9 +61,31 @@ export function stableHash(arg: any): string {
         }
       }
       table.set(arg, result)
+      // Track this object for cleanup after the top-level hash completes
+      if (currentHashObjects) {
+        currentHashObjects.push(arg)
+      }
     }
+    
+    // Clean up the table after top-level hash completes
+    if (isTopLevel && currentHashObjects) {
+      for (const obj of currentHashObjects) {
+        table.delete(obj)
+      }
+      currentHashObjects = null
+    }
+    
     return result
   }
+  
+  // Clean up for top-level primitive values
+  if (isTopLevel && currentHashObjects) {
+    for (const obj of currentHashObjects) {
+      table.delete(obj)
+    }
+    currentHashObjects = null
+  }
+  
   if (isDate) return arg.toJSON()
   if (type === "symbol") return arg.toString()
   return type === "string" ? JSON.stringify(arg) : "" + arg
