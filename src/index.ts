@@ -37,7 +37,8 @@ export function stableHash(arg: any): string {
       for (index = 0; index < arg.length; index++) {
         result += stableHash(arg[index]) + ","
       }
-      table.set(arg, result)
+      // Remove from table to allow rehashing if the array is mutated
+      table.delete(arg)
     } else if (constructor === Object) {
       // Object, sort keys.
       result = "#"
@@ -47,7 +48,8 @@ export function stableHash(arg: any): string {
           result += index + ":" + stableHash(arg[index]) + ","
         }
       }
-      table.set(arg, result)
+      // Remove from table to allow rehashing if the object is mutated
+      table.delete(arg)
     }
     return result
   }
