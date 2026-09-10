@@ -1,4 +1,5 @@
 import hash from "../src/index"
+import { Temporal } from "@js-temporal/polyfill"
 
 describe(`Booleans`, () => {
     test(`Simple check`, () => {
@@ -194,6 +195,108 @@ describe(`POJOs`, () => {
     });
 
 });
+
+describe(`Temporal`, () => {
+    const temporalCases: Array<[
+        string,
+        { from(value: string): any },
+        string,
+        string,
+    ]> = [
+        ["Instant", Temporal.Instant, "2024-01-01T00:00:00Z", "2024-01-02T00:00:00Z"],
+        ["ZonedDateTime", Temporal.ZonedDateTime, "2024-01-01T00:00:00[UTC]", "2024-01-02T00:00:00[UTC]"],
+        ["PlainDateTime", Temporal.PlainDateTime, "2024-01-01T00:00:00", "2024-01-02T00:00:00"],
+        ["PlainDate", Temporal.PlainDate, "2024-01-01", "2024-01-02"],
+        ["PlainTime", Temporal.PlainTime, "12:34:56", "12:34:57"],
+        ["PlainYearMonth", Temporal.PlainYearMonth, "2024-01", "2024-02"],
+        ["PlainMonthDay", Temporal.PlainMonthDay, "01-01", "01-02"],
+        ["Duration", Temporal.Duration, "P1D", "P2D"],
+    ]
+
+    test.each(temporalCases)(`%s values are hashed by value`, (_, Type, value, differentValue) => {
+        const temporalValue = Type.from(value)
+        expect(hash(temporalValue)).toEqual(hash(Type.from(value)))
+        expect(hash(temporalValue)).not.toEqual(hash(Type.from(differentValue)))
+        expect(hash(temporalValue)).not.toEqual(hash(temporalValue.toJSON()))
+    })
+
+    test(`Temporal types have distinct hashes`, () => {
+        const date = Temporal.PlainDate.from("2020-01-01[u-ca=gregory]")
+        const yearMonth = Temporal.PlainYearMonth.from("2020-01-01[u-ca=gregory]")
+        expect(date.toJSON()).toEqual(yearMonth.toJSON())
+        expect(hash(date)).not.toEqual(hash(yearMonth))
+
+        const legacyDate = new Date("2024-01-01T00:00:00.123Z")
+        const instant = Temporal.Instant.from("2024-01-01T00:00:00.123Z")
+        expect(legacyDate.toJSON()).toEqual(instant.toJSON())
+        expect(hash(legacyDate)).not.toEqual(hash(instant))
+    })
+
+    test(`toJSON omissions affect the hash`, () => {
+        const firstYearMonth = new Temporal.PlainYearMonth(2024, 1, "iso8601", 1)
+        const fifteenthYearMonth = new Temporal.PlainYearMonth(2024, 1, "iso8601", 15)
+        expect(firstYearMonth.equals(fifteenthYearMonth)).toEqual(false)
+        expect(firstYearMonth.toJSON()).toEqual(fifteenthYearMonth.toJSON())
+        expect(hash(firstYearMonth)).not.toEqual(hash(fifteenthYearMonth))
+
+        const firstMonthDay = new Temporal.PlainMonthDay(1, 1, "iso8601", 1972)
+        const secondMonthDay = new Temporal.PlainMonthDay(1, 1, "iso8601", 2000)
+        expect(firstMonthDay.equals(secondMonthDay)).toEqual(false)
+        expect(firstMonthDay.toJSON()).toEqual(secondMonthDay.toJSON())
+        expect(hash(firstMonthDay)).not.toEqual(hash(secondMonthDay))
+    })
+
+    test(`ZonedDateTime hashes include the exact instant`, () => {
+        const beforeTransition = new Temporal.ZonedDateTime(
+            BigInt("-1830387624000000000"),
+            "Africa/Ndjamena",
+        )
+        const afterTransition = new Temporal.ZonedDateTime(
+            BigInt("-1830387612000000000"),
+            "Africa/Ndjamena",
+        )
+        expect(beforeTransition.equals(afterTransition)).toEqual(false)
+        expect(beforeTransition.toString({ calendarName: "always" }))
+            .toEqual(afterTransition.toString({ calendarName: "always" }))
+        expect(hash(beforeTransition)).not.toEqual(hash(afterTransition))
+    })
+
+    test(`equivalent Duration fields share a canonical hash`, () => {
+        const seconds = new Temporal.Duration(0, 0, 0, 0, 0, 0, 1)
+        const milliseconds = new Temporal.Duration(0, 0, 0, 0, 0, 0, 0, 1000)
+        expect(Temporal.Duration.compare(seconds, milliseconds)).toEqual(0)
+        expect(hash(seconds)).toEqual(hash(milliseconds))
+    })
+
+    test(`Temporal values are hashed by value when nested`, () => {
+        expect(hash({ date: Temporal.PlainDate.from("2024-01-01") }))
+            .toEqual(hash({ date: Temporal.PlainDate.from("2024-01-01") }))
+    })
+
+    test(`invalid Temporal-like objects keep reference semantics`, () => {
+        class TaggedTemporal {
+            get [Symbol.toStringTag]() {
+                return "Temporal.PlainDate"
+            }
+        }
+
+        class ThrowingTemporal extends TaggedTemporal {
+            toJSON() {
+                return "2024-01-01"
+            }
+
+            toString() {
+                throw new TypeError("Not a real Temporal value")
+            }
+        }
+
+        for (const TemporalLike of [TaggedTemporal, ThrowingTemporal]) {
+            const value = new TemporalLike()
+            expect(() => hash(value)).not.toThrow()
+            expect(hash(value)).not.toEqual(hash(new TemporalLike()))
+        }
+    })
+})
 
 describe(`The Func-y Bunch featuring The Referential Squad`, () => {
     test(`Functions`, () => {
