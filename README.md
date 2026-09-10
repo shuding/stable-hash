@@ -63,6 +63,18 @@ hash(/foo/) !== hash(/bar/)
 hash(new Date(1)) === hash(new Date(1))
 ```
 
+### Temporal
+
+All standard Temporal types are hashed by value, whether they are native or
+provided by a polyfill:
+
+```js
+import { Temporal } from '@js-temporal/polyfill'
+
+hash(Temporal.PlainDate.from('2024-01-01')) ===
+  hash(Temporal.PlainDate.from('2024-01-01'))
+```
+
 ### Array
 
 ```js

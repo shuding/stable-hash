@@ -24,6 +24,26 @@ export function stableHash(arg: any): string {
     // If it's already hashed, directly return the result.
     let result = table.get(arg)
     if (result) return result
+
+    // Temporal values are immutable and should be hashed by value. Include the
+    // type, calendar reference fields, and exact ZonedDateTime instant.
+    try {
+      const tag = arg[Symbol.toStringTag]
+      if (
+        tag &&
+        tag.startsWith("Temporal.") &&
+        typeof arg.toJSON === "function"
+      ) {
+        return (
+          tag +
+          arg.toString({ calendarName: "always" }) +
+          (arg.timeZoneId ? arg.epochNanoseconds : "")
+        )
+      }
+    } catch {
+      // Fall through when Temporal serialization fails.
+    }
+
     // Store the hash first for circular reference detection before entering the
     // recursive `stableHash` calls.
     // For other objects like set and map, we use this id directly as the hash.
